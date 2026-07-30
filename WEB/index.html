@@ -709,7 +709,7 @@ if (!SUPABASE_URL.includes("supabase.co") || SUPABASE_ANON_KEY.includes("your_")
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_SESSION_KEY = "ladfiq_admin_session";
-const ADMIN_CREDENTIALS = { username: "admin", password: "admin123" };
+
 
 const CONFIG = {
   WHATSAPP_NUMBER: "6285882542788",
@@ -922,22 +922,33 @@ document.getElementById("closeAdminModal").addEventListener("click", ()=> closeM
   overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeModal(overlay); });
 });
 
-loginForm.addEventListener("submit", (e)=>{
-  e.preventDefault();
-  const u = document.getElementById("loginUsername").value.trim();
-  const p = document.getElementById("loginPassword").value;
+loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  if(u === ADMIN_CREDENTIALS.username && p === ADMIN_CREDENTIALS.password){
+    const u = document.getElementById("loginUsername").value.trim();
+    const p = document.getElementById("loginPassword").value;
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: u,
+    password: p
+});
+
+console.log("LOGIN DATA:", data);
+console.log("LOGIN ERROR:", error);
+    
+
+    if (error) {
+        loginError.textContent = error.message;
+        loginError.style.display = "block";
+        return;
+    }
+
     sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
     loginError.style.display = "none";
     closeModal(loginModalOverlay);
     resetProductForm();
     renderAdminList();
     openModal(adminModalOverlay);
-  } else {
-    loginError.textContent = "Username atau password salah.";
-    loginError.style.display = "block";
-  }
 });
 
 document.getElementById("logoutBtn").addEventListener("click", ()=>{
