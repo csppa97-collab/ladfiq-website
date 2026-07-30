@@ -893,8 +893,8 @@ async function refreshApp(){
    ADMIN — LOGIN / LOGOUT
    ================================================================ */
 
-function isAdminLoggedIn(){
-  return sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
+function isAdminLoggedIn() {
+    return sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
 }
 
 function openModal(overlayEl){ overlayEl.classList.add("open"); }
@@ -951,9 +951,11 @@ console.log("LOGIN ERROR:", error);
     openModal(adminModalOverlay);
 });
 
-document.getElementById("logoutBtn").addEventListener("click", ()=>{
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
-  closeModal(adminModalOverlay);
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
+
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    closeModal(adminModalOverlay);
 });
 
 /* ================================================================
